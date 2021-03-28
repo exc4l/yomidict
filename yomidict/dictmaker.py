@@ -1,10 +1,12 @@
 import fugashi
 import srt
 import re
+import ebooklib
 from collections import Counter
 from tqdm import tqdm
 from pathlib import Path
 from zipfile import ZipFile
+from ebooklib import epub
 
 
 class DictMaker:
@@ -57,6 +59,13 @@ class DictMaker:
         text = "".join(f"{remove_names(s.content)}\n" for s in subs)
         return self._clean_txt(text)
 
+    def _clean_epub(self, file):
+        book = epub.read_epub(file)
+        text = str()
+        for doc in book.get_items_of_type(ebooklib.ITEM_DOCUMENT):
+            text += str(doc.content.decode("utf-8-sig")) + "\n"
+        return self._clean_html(text)
+
     def normalize_refcounter(self, value):
         """Use this if you haven't normalized the Counter before due to feeding several file lists or single texts"""
         for key in self.refcounter.keys():
@@ -97,6 +106,8 @@ class DictMaker:
             elif file.suffix == ".srt":
                 with open(file, "r", encoding="utf-8") as f:
                     text = self._clean_srt(f.read())
+            elif file.suffix == ".epub":
+                text = self._clean_epub(file)
             else:
                 print(f"unable to process {entry} due to it being {file.suffix}")
                 raise FileNotFoundError
@@ -107,7 +118,7 @@ class DictMaker:
             for key in self.refcounter.keys():
                 self.refcounter[key] /= total
 
-    def save(self, filepath, dictname):
+    def save(self, filepath, dictname, only_rank_and_freq=False):
         fpath = Path(filepath)
         if fpath.suffix != ".zip":
             fpath = fpath.parent / (fpath.name + ".zip")
@@ -115,7 +126,10 @@ class DictMaker:
         freqstr = ""
         idx = 1
         for tok in self.wcounter.most_common():
-            freqstr += f'["{tok[0]}","freq"," {idx} F: {tok[1]} %: {self.refcounter.get(tok[0],0)*100:.2f}"],'
+            if only_rank_and_freq:
+                freqstr += f'["{tok[0]}","freq"," {idx} F: {tok[1]}"],'
+            else:
+                freqstr += f'["{tok[0]}","freq"," {idx} F: {tok[1]} %: {self.refcounter.get(tok[0],0)*100:.2f}"],'
             idx += 1
         freqstr = "[" + freqstr[:-1] + "]"
         with ZipFile(fpath, "w") as zipf:

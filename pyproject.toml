@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "yomidict"
-version = "0.1.0"
-description = "Create dictionaries for yomichan"
+version = "0.1.1"
+description = "Create frequency dictionaries for yomichan out of media"
 authors = ["exc4l <cps0537@gmail.com>"]
 readme = "README.md"
 repository = "https://github.com/exc4l/yomidict"
@@ -19,6 +19,7 @@ python = "^3.8"
 fugashi = "^1.1.0"
 unidic = "^1.0.3"
 srt = "^3.4.1"
+EbookLib = "^0.17.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
