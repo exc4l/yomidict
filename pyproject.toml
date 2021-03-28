@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "yomidict"
+version = "0.1.0"
+description = "Create dictionaries for yomichan"
+authors = ["exc4l <cps0537@gmail.com>"]
+readme = "README.md"
+repository = "https://github.com/exc4l/yomidict"
+keywords = ["japanese", "kanji", "dictionary", "yomichan"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Education",
+    "Intended Audience :: End Users/Desktop",
+    "Topic :: Text Processing :: Linguistic",
+    "Natural Language :: Japanese"
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+fugashi = "^1.1.0"
+unidic = "^1.0.3"
+srt = "^3.4.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
