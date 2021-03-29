@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "yomidict"
-version = "0.1.1"
+version = "0.1.2"
 description = "Create frequency dictionaries for yomichan out of media"
 authors = ["exc4l <cps0537@gmail.com>"]
 readme = "README.md"

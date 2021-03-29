@@ -92,29 +92,47 @@ class DictMaker:
             self.refcounter.update(set(total_tokens))
         self.wcounter.update(total_tokens)
 
-    def feed_files(self, filelist, reset_refcounter=True, normalize_refcounter=True):
+    def feed_files(
+        self,
+        filelist,
+        skip_errors=False,
+        reset_refcounter=True,
+        normalize_refcounter=True,
+    ):
         if reset_refcounter:
             self.refcounter = Counter()
+        failed_files = 0
         for entry in tqdm(filelist):
             file = Path(entry)
-            if file.suffix == ".html":
-                with open(file, "r", encoding="utf-8") as f:
-                    text = self._clean_html(f.read())
-            elif file.suffix == ".txt":
-                with open(file, "r", encoding="utf-8") as f:
-                    text = self._clean_txt(f.read())
-            elif file.suffix == ".srt":
-                with open(file, "r", encoding="utf-8") as f:
-                    text = self._clean_srt(f.read())
-            elif file.suffix == ".epub":
-                text = self._clean_epub(file)
-            else:
-                print(f"unable to process {entry} due to it being {file.suffix}")
-                raise FileNotFoundError
-            self.feed_text(text, refcounter_add=True)
+            try:
+                if file.suffix == ".html":
+                    with open(file, "r", encoding="utf-8") as f:
+                        text = self._clean_html(f.read())
+                elif file.suffix == ".txt":
+                    with open(file, "r", encoding="utf-8") as f:
+                        text = self._clean_txt(f.read())
+                elif file.suffix == ".srt":
+                    with open(file, "r", encoding="utf-8") as f:
+                        text = self._clean_srt(f.read())
+                elif file.suffix == ".epub":
+                    text = self._clean_epub(file)
+                else:
+                    print(
+                        f"\nUnable to process {entry} due to being a {file.suffix} file"
+                    )
+                    if skip_errors:
+                        failed_files += 1
+                        continue
+                    raise TypeError(f"{file.suffix} parser not implemented")
+                self.feed_text(text, refcounter_add=True)
+            except Exception as e:
+                print(f"\nFailed to process {entry}: {e}")
+                failed_files += 1
+                if not skip_errors:
+                    raise e
         # normalize refcounter
         if normalize_refcounter:
-            total = len(filelist)
+            total = len(filelist) - failed_files
             for key in self.refcounter.keys():
                 self.refcounter[key] /= total
 
