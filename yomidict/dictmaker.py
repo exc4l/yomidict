@@ -16,7 +16,7 @@ class DictMaker:
         self.tagger = fugashi.Tagger()
         if self.tagger.dictionary_info[0]["size"] < 872000:
             print("Please execute 'python -m unidic download'")
-            raise ImportError
+            raise ImportError("Please execute 'python -m unidic download'")
         self.wcounter = Counter()
         self.refcounter = Counter()
         self.hiragana = set(
@@ -140,14 +140,14 @@ class DictMaker:
         fpath = Path(filepath)
         if fpath.suffix != ".zip":
             fpath = fpath.parent / (fpath.name + ".zip")
-        yomi_title = '{"title":"' + dictname + '_W","format":3,"revision":"frequency1"}'
+        yomi_title = '{"title":"' + dictname + '","format":3,"revision":"frequency1"}'
         freqstr = ""
         idx = 1
         for tok in self.wcounter.most_common():
             if only_rank_and_freq:
-                freqstr += f'["{tok[0]}","freq"," {idx} F: {tok[1]}"],'
+                freqstr += f'["{tok[0]}","freq","W: {idx} F: {tok[1]}"],'
             else:
-                freqstr += f'["{tok[0]}","freq"," {idx} F: {tok[1]} %: {self.refcounter.get(tok[0],0)*100:.2f}"],'
+                freqstr += f'["{tok[0]}","freq","W: {idx} F: {tok[1]} %: {self.refcounter.get(tok[0],0)*100:.2f}"],'
             idx += 1
         freqstr = "[" + freqstr[:-1] + "]"
         with ZipFile(fpath, "w") as zipf:
