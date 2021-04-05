@@ -2,6 +2,9 @@
 Create frequency dictionaries for yomichan out of media.\
 Currently supported formats are: epub, html, srt, txt
 
+
+![](https://github.com/exc4l/yomidict/blob/main/example.png)
+
 ```python
 pip install yomidict
 ```
