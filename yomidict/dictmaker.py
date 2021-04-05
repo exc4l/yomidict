@@ -73,7 +73,7 @@ class DictMaker:
 
     def feed_text(self, text, refcounter_add=False):
         total_tokens = list()
-        for sen in text.split("\h"):
+        for sen in text.split("\n"):
             sen_tokens = [
                 w.feature.lemma.split("-")[0] if w.feature.lemma else w.surface
                 for w in self.tagger(sen)
