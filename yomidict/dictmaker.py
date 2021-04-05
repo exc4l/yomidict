@@ -136,19 +136,47 @@ class DictMaker:
             for key in self.refcounter.keys():
                 self.refcounter[key] /= total
 
-    def save(self, filepath, dictname, only_rank_and_freq=False):
+    def save(
+        self,
+        filepath,
+        dictname,
+        only_rank_and_freq=False,
+        use_suffix=False,
+        use_suffix_rank=False,
+        use_suffix_freq=False,
+    ):
+        def suffix_numbers(number):
+            if number > 1e6 - 1:
+                return f"{int(number/1e6)}M"
+            if number > 1e3 - 1:
+                return f"{int(number/1e3)}K"
+            return f"{number}"
+
+        def get_num(num, use_suffix):
+            if use_suffix:
+                return suffix_numbers(num)
+            return num
+
+        if use_suffix:
+            use_suffix_rank = True
+            use_suffix_freq = True
         fpath = Path(filepath)
         if fpath.suffix != ".zip":
             fpath = fpath.parent / (fpath.name + ".zip")
         yomi_title = '{"title":"' + dictname + '","format":3,"revision":"frequency1"}'
-        freqstr = ""
+        freqlist = list()
         idx = 1
         for tok in self.wcounter.most_common():
             if only_rank_and_freq:
-                freqstr += f'["{tok[0]}","freq","W: {idx} F: {tok[1]}"],'
+                freqlist.append(
+                    f'["{tok[0]}","freq","W: {get_num(idx,use_suffix_rank)} F: {get_num(tok[1], use_suffix_freq)}"],'
+                )
             else:
-                freqstr += f'["{tok[0]}","freq","W: {idx} F: {tok[1]} %: {self.refcounter.get(tok[0],0)*100:.2f}"],'
+                freqlist.append(
+                    f'["{tok[0]}","freq","W: {get_num(idx,use_suffix_rank)} F: {get_num(tok[1], use_suffix_freq)} %: {self.refcounter.get(tok[0],0)*100:.2f}"],'
+                )
             idx += 1
+        freqstr = "".join(freqlist)
         freqstr = "[" + freqstr[:-1] + "]"
         with ZipFile(fpath, "w") as zipf:
             zipf.writestr("index.json", yomi_title)
