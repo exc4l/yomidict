@@ -63,7 +63,7 @@ class DictMaker:
 
     def _clean_epub(self, file):
         book = epub.read_epub(file)
-        text = str()
+        text = ""
         for doc in book.get_items_of_type(ebooklib.ITEM_DOCUMENT):
             text += str(doc.content.decode("utf-8-sig")) + "\n"
         return self._clean_html(text)
@@ -71,11 +71,15 @@ class DictMaker:
     def _clean_ass(self, file):
         doc = ass.parse(file)
         lines_with_tags = [event.text for event in doc.events]
+
         def rem_tags(line):
             try:
-                return "".join(i.text for i in parse_ass(line) if type(i) == AssText).replace(r"\N", " ")
+                return "".join(
+                    i.text for i in parse_ass(line) if type(i) == AssText
+                ).replace(r"\N", " ")
             except:
                 return ""
+
         lines = [rem_tags(l) for l in lines_with_tags]
         return self._clean_txt("\n".join(lines))
 
@@ -108,7 +112,7 @@ class DictMaker:
     def feed_files(
         self,
         filelist,
-        skip_errors=False,
+        skip_errors=True,
         reset_refcounter=True,
         normalize_refcounter=True,
     ):
@@ -157,9 +161,9 @@ class DictMaker:
         filepath,
         dictname,
         only_rank_and_freq=False,
-        use_suffix=False,
-        use_suffix_rank=False,
-        use_suffix_freq=False,
+        use_suffix=True,
+        use_suffix_rank=True,
+        use_suffix_freq=True,
     ):
         def suffix_numbers(number):
             if number > 1e6 - 1:

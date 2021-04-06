@@ -1,6 +1,6 @@
 # yomidict
 Create frequency dictionaries for yomichan out of media.\
-Currently supported formats are: epub, html, srt, txt
+Currently supported formats are: epub, html, srt, ass, txt
 
 
 ![](https://github.com/exc4l/yomidict/blob/main/example.png)
@@ -33,7 +33,7 @@ Keeps track of in how many files a certain token was found. E.g. a value of 0.5 
 def feed_files(
         self,
         filelist,
-        skip_errors=False,
+        skip_errors=True,
         reset_refcounter=True,
         normalize_refcounter=True,
     )
@@ -51,7 +51,7 @@ def save(
         filepath,
         dictname,
         only_rank_and_freq=False,
-        use_suffix=False,
+        use_suffix=True,
         use_suffix_rank=False,
         use_suffix_freq=False,
     )
