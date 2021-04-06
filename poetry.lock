@@ -1,4 +1,20 @@
 [[package]]
+name = "ass"
+version = "0.5.2"
+description = "A library for parsing and manipulating Advanced SubStation Alpha subtitle files."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "ass-tag-parser"
+version = "2.3.1"
+description = "Parser of ASS tags"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "atomicwrites"
 version = "1.4.0"
 description = "Atomic file writes."
@@ -259,9 +275,16 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "4160af2c619282a55f3b51b1c84f87c07580a186dc866bc1c385fc2f80ffbe51"
+content-hash = "e016692514ab08d5389681e132d4e614b7f44b5ebc4cb1cb3030da3af5bc1abc"
 
 [metadata.files]
+ass = [
+    {file = "ass-0.5.2-py3-none-any.whl", hash = "sha256:8af836a6c2bd34672651572ceeb3562dd53f7e746339453d909e5f9c0121c874"},
+    {file = "ass-0.5.2.tar.gz", hash = "sha256:ee631ede8870d8aea7d019977fd96ec934ce8bc779cc564efc1cbdd60e462b17"},
+]
+ass-tag-parser = [
+    {file = "ass_tag_parser-2.3.1.tar.gz", hash = "sha256:3dc95cb5391619dce69eea904c4b84ebc8141132da19ff913e18231b3b493849"},
+]
 atomicwrites = [
     {file = "atomicwrites-1.4.0-py2.py3-none-any.whl", hash = "sha256:6d1784dea7c0c8d4a5172b6c620f40b6e4cbfdf96d783691f2e1302a7b88e197"},
     {file = "atomicwrites-1.4.0.tar.gz", hash = "sha256:ae70396ad1a434f9c7046fd2dd196fc04b12f9e91ffb859164193be8b6168a7a"},

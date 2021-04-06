@@ -7,6 +7,8 @@ from tqdm import tqdm
 from pathlib import Path
 from zipfile import ZipFile
 from ebooklib import epub
+import ass
+from ass_tag_parser import parse_ass, AssText
 
 
 class DictMaker:
@@ -66,6 +68,17 @@ class DictMaker:
             text += str(doc.content.decode("utf-8-sig")) + "\n"
         return self._clean_html(text)
 
+    def _clean_ass(self, file):
+        doc = ass.parse(file)
+        lines_with_tags = [event.text for event in doc.events]
+        def rem_tags(line):
+            try:
+                return "".join(i.text for i in parse_ass(line) if type(i) == AssText).replace(r"\N", " ")
+            except:
+                return ""
+        lines = [rem_tags(l) for l in lines_with_tags]
+        return self._clean_txt("\n".join(lines))
+
     def normalize_refcounter(self, value):
         """Use this if you haven't normalized the Counter before due to feeding several file lists or single texts"""
         for key in self.refcounter.keys():
@@ -105,14 +118,17 @@ class DictMaker:
         for entry in tqdm(filelist):
             file = Path(entry)
             try:
-                if file.suffix == ".html":
-                    with open(file, "r", encoding="utf-8") as f:
+                if file.suffix == ".ass":
+                    with open(file, "r", encoding="utf-8-sig") as f:
+                        text = self._clean_ass(f)
+                elif file.suffix == ".html":
+                    with open(file, "r", encoding="utf-8-sig") as f:
                         text = self._clean_html(f.read())
                 elif file.suffix == ".txt":
-                    with open(file, "r", encoding="utf-8") as f:
+                    with open(file, "r", encoding="utf-8-sig") as f:
                         text = self._clean_txt(f.read())
                 elif file.suffix == ".srt":
-                    with open(file, "r", encoding="utf-8") as f:
+                    with open(file, "r", encoding="utf-8-sig") as f:
                         text = self._clean_srt(f.read())
                 elif file.suffix == ".epub":
                     text = self._clean_epub(file)
