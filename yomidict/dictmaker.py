@@ -1,4 +1,3 @@
-import fugashi
 import srt
 import re
 import ebooklib
@@ -9,16 +8,14 @@ from zipfile import ZipFile
 from ebooklib import epub
 import ass
 from ass_tag_parser import parse_ass, AssText
+from sudachipy import Dictionary, SplitMode
 
 
 class DictMaker:
     """docstring for DictMaker"""
 
     def __init__(self):
-        self.tagger = fugashi.Tagger()
-        if self.tagger.dictionary_info[0]["size"] < 872000:
-            print("Please execute 'python -m unidic download'")
-            raise ImportError("Please execute 'python -m unidic download'")
+        self.tagger = Dictionary(dict="full").create(mode=SplitMode.A)
         self.wcounter = Counter()
         self.refcounter = Counter()
         self.hiragana = set(
@@ -43,6 +40,7 @@ class DictMaker:
     def _clean_html(self, text):
         text = re.sub(r'<font size="1">(.*?)<\/font>', "", text)
         text = re.sub(r"<rt>(.*?)<\/rt>", "", text)
+        text = text.replace("</p>", "\n")
         text = "".join(filter(self.allowed.__contains__, text))
         text = re.sub(r"\n+", "\n", text)
         return text
@@ -91,10 +89,7 @@ class DictMaker:
     def feed_text(self, text, refcounter_add=False):
         total_tokens = list()
         for sen in text.split("\n"):
-            sen_tokens = [
-                w.feature.lemma.split("-")[0] if w.feature.lemma else w.surface
-                for w in self.tagger(sen)
-            ]
+            sen_tokens = [w.normalized_form() for w in self.tagger.tokenize(sen)]
             sen_tokens = [
                 w
                 for w in sen_tokens
@@ -151,6 +146,8 @@ class DictMaker:
                 if not skip_errors:
                     raise e
         # normalize refcounter
+        if skip_errors:
+            print(f"Skipped files: {failed_files}")
         if normalize_refcounter:
             total = len(filelist) - failed_files
             for key in self.refcounter.keys():

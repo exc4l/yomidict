@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "yomidict"
-version = "0.1.6"
-description = "Create frequency dictionaries for yomichan out of media"
+version = "0.1.7"
+description = "Create frequency dictionaries for yomichan out of a variety of media"
 authors = ["exc4l <cps0537@gmail.com>"]
 readme = "README.md"
 repository = "https://github.com/exc4l/yomidict"
@@ -22,9 +22,13 @@ srt = "^3.4.1"
 EbookLib = "^0.17.1"
 ass = "^0.5.2"
 ass-tag-parser = "^2.3.1"
+SudachiPy = "^0.6.3"
+SudachiDict-full = "^20211220"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
+black = {version = "^22.3.0", allow-prereleases = true}
+ipykernel = "^6.13.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
