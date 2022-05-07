@@ -33,14 +33,32 @@ class DictMaker:
         self.all_kanji_set = set(
             chr(uni) for uni in range(ord("一"), ord("龯") + 1)
         ) | set("〆々")
+        self.numbers = set("0123456789０１２３４５６７８９")
         self.allowed = (
-            self.all_kanji_set | self.sentence_marker | self.katakana | self.hiragana
+            self.all_kanji_set
+            | self.sentence_marker
+            | self.katakana
+            | self.hiragana
+            | self.numbers
         )
+
+    def _check_allowed_char(self, w):
+        if (
+            w in self.hiragana
+            or w in self.katakana
+            or w in self.sentence_marker
+            or w in self.numbers
+            or w.isnumeric()
+        ):
+            return False
+        return True
 
     def _clean_html(self, text):
         text = re.sub(r'<font size="1">(.*?)<\/font>', "", text)
         text = re.sub(r"<rt>(.*?)<\/rt>", "", text)
         text = text.replace("</p>", "\n")
+        text = text.replace("</span>", "\n")
+        text = text.replace("<br", "\n")
         text = "".join(filter(self.allowed.__contains__, text))
         text = re.sub(r"\n+", "\n", text)
         return text
@@ -90,15 +108,7 @@ class DictMaker:
         total_tokens = list()
         for sen in text.split("\n"):
             sen_tokens = [w.normalized_form() for w in self.tagger.tokenize(sen)]
-            sen_tokens = [
-                w
-                for w in sen_tokens
-                if not (
-                    w in self.hiragana
-                    or w in self.katakana
-                    or w in self.sentence_marker
-                )
-            ]
+            sen_tokens = [w for w in sen_tokens if self._check_allowed_char(w)]
             total_tokens.extend(sen_tokens)
         if refcounter_add:
             self.refcounter.update(set(total_tokens))
